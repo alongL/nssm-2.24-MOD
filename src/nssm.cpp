@@ -124,9 +124,20 @@ int _tmain(int argc, TCHAR **argv) {
       Valid commands are:
       start, stop, pause, continue, install, edit, get, set, reset, unset, remove
     */
-    if (str_equiv(argv[1], _T("start"))) exit(control_service(NSSM_SERVICE_CONTROL_START, argc - 2, argv + 2));
-    if (str_equiv(argv[1], _T("stop"))) exit(control_service(SERVICE_CONTROL_STOP, argc - 2, argv + 2));
+	  if (str_equiv(argv[1], _T("start"))) {
+		  if (!is_admin)
+			exit(  elevate(argc, argv, NSSM_MESSAGE_NOT_ADMINISTRATOR_CANNOT_EDIT) );
+		  exit(control_service(NSSM_SERVICE_CONTROL_START, argc - 2, argv + 2));
+	  }
+	  if (str_equiv(argv[1], _T("stop"))) {
+		  if (!is_admin)
+			  exit(elevate(argc, argv, NSSM_MESSAGE_NOT_ADMINISTRATOR_CANNOT_EDIT));
+
+		  exit(control_service(SERVICE_CONTROL_STOP, argc - 2, argv + 2));
+	  }
     if (str_equiv(argv[1], _T("restart"))) {
+		if (!is_admin)
+			exit(elevate(argc, argv, NSSM_MESSAGE_NOT_ADMINISTRATOR_CANNOT_EDIT));
       int ret = control_service(SERVICE_CONTROL_STOP, argc - 2, argv + 2);
       if (ret) exit(ret);
       exit(control_service(NSSM_SERVICE_CONTROL_START, argc - 2, argv + 2));
@@ -140,6 +151,8 @@ int _tmain(int argc, TCHAR **argv) {
       exit(pre_install_service(argc - 2, argv + 2));
     }
     if (str_equiv(argv[1], _T("edit")) || str_equiv(argv[1], _T("get")) || str_equiv(argv[1], _T("set")) || str_equiv(argv[1], _T("reset")) || str_equiv(argv[1], _T("unset"))) {
+		if (!is_admin)
+			exit(elevate(argc, argv, NSSM_MESSAGE_NOT_ADMINISTRATOR_CANNOT_EDIT));
       int ret = pre_edit_service(argc - 1, argv + 1);
       if (ret == 3 && ! is_admin && argc == 3) exit(elevate(argc, argv, NSSM_MESSAGE_NOT_ADMINISTRATOR_CANNOT_EDIT));
       /* There might be a password here. */
