@@ -1,3 +1,6 @@
 # nssm-2.24-MOD
 
-源代码是从nssm.cc上下载的，但是官方的代码在win10平台下运行时，nssm start/stop/set  都执行失败，原因在于权限不够，所以加了一个权限获取的语句。更改不大，供大家参考。
+The source code comes from www.nssm.cc 
+When it's used in win10, nssm start/stop/set  failed for no privilege, so I add a privilege acquire requtest.
+It now works good.
+for you to enjoy.
